@@ -1,63 +1,305 @@
-# Kubernetes Cluster Component Security - 22%
+# 🔧 Kubernetes Cluster Component Security - 22%
+
+<div align="center">
+
+![Cluster Security](https://img.shields.io/badge/Domain%202-Cluster%20Component%20Security-red?style=for-the-badge)
+![Weight](https://img.shields.io/badge/Exam%20Weight-22%25-green?style=for-the-badge)
+![Questions](https://img.shields.io/badge/~18%20Questions-Highest%20Weight-orange?style=for-the-badge)
+
+**🎯 Most Critical Domain - Master These Components!**
+
+</div>
+
+---
+
+## 🎯 Domain Overview
+
+> **This is the HIGHEST weighted domain** - understanding Kubernetes component security is absolutely crucial for KCSA success!
+
+### 🔍 What You'll Master
 
 Understanding the security of individual Kubernetes components is crucial for maintaining a secure cluster. Each component has specific security considerations, attack vectors, and hardening requirements. This section covers the security aspects of all major Kubernetes components.
 
-## API Server Security
+<table>
+<tr>
+<td width="50%">
 
-The API Server is the central component of the Kubernetes control plane and the primary attack target. It exposes the Kubernetes API and serves as the gateway for all cluster operations.
+#### 🎓 **Learning Objectives**
+- Secure API server configurations
+- Harden etcd data store
+- Configure kubelet security
+- Implement container runtime security
+- Secure cluster networking
+- Protect storage and secrets
 
-### Security Features
+</td>
+<td width="50%">
 
-#### Authentication
-Multiple authentication methods supported:
-- **X.509 Client Certificates**
-- **Static Token Files**
-- **Bootstrap Tokens**
-- **Service Account Tokens**
-- **OpenID Connect (OIDC)**
-- **Webhook Token Authentication**
+#### 🎯 **Exam Focus Areas**
+- API server authentication/authorization
+- etcd encryption and access control
+- Kubelet configuration and security
+- Container runtime security features
+- Network security and CNI plugins
+- Storage encryption and access patterns
 
-#### Authorization
-- **RBAC (Role-Based Access Control)** - Recommended
-- **ABAC (Attribute-Based Access Control)**
-- **Node Authorization**
-- **Webhook Authorization**
+</td>
+</tr>
+</table>
 
-#### Admission Control
-Security-focused admission controllers:
-- **PodSecurityPolicy** (deprecated)
-- **Pod Security Admission**
-- **NetworkPolicy**
-- **ResourceQuota**
-- **LimitRanger**
+### 📊 Component Security Priority
 
-### Hardening Best Practices
-
-#### TLS Configuration
-```yaml
-# API Server TLS settings
---tls-cert-file=/path/to/cert.pem
---tls-private-key-file=/path/to/key.pem
---tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
---tls-min-version=VersionTLS12
+```mermaid
+graph TD
+    A[🔐 API Server] --> B[🗄️ etcd]
+    A --> C[🤖 Kubelet]
+    A --> D[📦 Container Runtime]
+    C --> E[🌐 Network]
+    C --> F[💾 Storage]
+    
+    style A fill:#ff6b6b
+    style B fill:#ffa726
+    style C fill:#66bb6a
+    style D fill:#42a5f5
+    style E fill:#ab47bc
+    style F fill:#26c6da
 ```
 
-#### Disable Insecure Features
-```yaml
-# Disable insecure port
---insecure-port=0
+### 🏗️ Kubernetes Architecture Security Overview
 
-# Disable profiling
---profiling=false
+<div align="center">
 
-# Enable audit logging
---audit-log-path=/var/log/audit.log
---audit-policy-file=/etc/kubernetes/audit-policy.yaml
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    🏗️ CONTROL PLANE                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │ 🔐 API      │  │ 🧠 Controller│  │ 📅 Scheduler        │  │
+│  │   Server    │  │   Manager   │  │                     │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+│                           │                                 │
+│                    ┌─────────────┐                         │
+│                    │ 🗄️ etcd     │                         │
+│                    │   Database  │                         │
+│                    └─────────────┘                         │
+└─────────────────────────────────────────────────────────────┘
+                              │
+┌─────────────────────────────────────────────────────────────┐
+│                      🖥️ WORKER NODES                       │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │ 🤖 Kubelet  │  │ 🌐 Kube     │  │ 📦 Container        │  │
+│  │             │  │   Proxy     │  │   Runtime           │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │                    📦 PODS                             │ │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐ │ │
+│  │  │ Container 1 │  │ Container 2 │  │ Container 3     │ │ │
+│  │  └─────────────┘  └─────────────┘  └─────────────────┘ │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## Controller Manager Security
+</div>
 
-The Controller Manager runs core control loops that regulate the state of the cluster. It requires elevated privileges but should be properly secured.
+---
+
+## 🔐 API Server Security
+
+> **🎯 Exam Focus:** The API server is the **gateway to your cluster** - expect 4-5 questions on API server security!
+
+The **API Server** is the central component of the Kubernetes control plane and the **primary attack target**. It exposes the Kubernetes API and serves as the gateway for all cluster operations.
+
+### 🏗️ API Server Security Architecture
+
+<div align="center">
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    🔐 API SERVER                            │
+│                                                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │ 🔑 Authn    │→ │ 🛡️ Authz    │→ │ ✅ Admission        │  │
+│  │ (Who?)      │  │ (Can they?) │  │   Controllers       │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+│                                                             │
+│                           ↓                                 │
+│                    ┌─────────────┐                         │
+│                    │ 🗄️ etcd     │                         │
+│                    │   Storage   │                         │
+│                    └─────────────┘                         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+</div>
+
+### 🔒 Security Features
+
+<table>
+<tr>
+<td width="50%">
+
+#### 🔑 **Authentication Methods**
+- ✅ **X.509 Client Certificates** (Recommended)
+- 🎫 **Service Account Tokens**
+- 🔐 **OpenID Connect (OIDC)**
+- 🌐 **Webhook Token Authentication**
+- ⚠️ **Static Token Files** (Not recommended)
+- 🚀 **Bootstrap Tokens** (For cluster setup)
+
+</td>
+<td width="50%">
+
+#### 🛡️ **Authorization Modes**
+- ✅ **RBAC** (Role-Based Access Control) - **Recommended**
+- 📋 **ABAC** (Attribute-Based Access Control)
+- 🖥️ **Node Authorization**
+- 🌐 **Webhook Authorization**
+- ⚠️ **AlwaysAllow** (Never use in production!)
+
+</td>
+</tr>
+</table>
+
+#### ✅ **Admission Controllers** (Security-Focused)
+
+<table>
+<tr>
+<td width="50%">
+
+##### 🔒 **Essential Controllers**
+- ✅ **Pod Security Admission** (Replaces PSP)
+- 🌐 **NetworkPolicy**
+- 📊 **ResourceQuota**
+- 📏 **LimitRanger**
+- 🚫 **DenyEscalatingExec**
+- 🔐 **SecurityContextDeny**
+
+</td>
+<td width="50%">
+
+##### ⚠️ **Deprecated/Dangerous**
+- ❌ **PodSecurityPolicy** (Deprecated in 1.21)
+- ❌ **AlwaysAdmit** (Never use!)
+- ⚠️ **DefaultStorageClass** (Use carefully)
+
+</td>
+</tr>
+</table>
+
+### 🛡️ API Server Hardening Best Practices
+
+#### 🔐 **TLS Configuration** (Critical!)
+
+```yaml
+# 🔒 Comprehensive API Server TLS Configuration
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-apiserver
+  namespace: kube-system
+spec:
+  containers:
+  - name: kube-apiserver
+    image: k8s.gcr.io/kube-apiserver:v1.28.0
+    command:
+    - kube-apiserver
+    
+    # 🔐 TLS Certificate Configuration
+    - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
+    - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
+    - --client-ca-file=/etc/kubernetes/pki/ca.crt
+    
+    # 🔒 Strong Cipher Suites (TLS 1.2+)
+    - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+    - --tls-min-version=VersionTLS12
+    
+    # 🚫 Disable Insecure Features
+    - --insecure-port=0
+    - --insecure-bind-address=127.0.0.1
+    - --profiling=false
+    
+    # 🔍 Enable Comprehensive Audit Logging
+    - --audit-log-path=/var/log/audit.log
+    - --audit-policy-file=/etc/kubernetes/audit-policy.yaml
+    - --audit-log-maxage=30
+    - --audit-log-maxbackup=10
+    - --audit-log-maxsize=100
+    
+    # 🛡️ Authentication & Authorization
+    - --authorization-mode=Node,RBAC
+    - --enable-admission-plugins=NodeRestriction,ResourceQuota,PodSecurity
+```
+
+#### 📋 **Comprehensive Audit Policy Example**
+
+```yaml
+# /etc/kubernetes/audit-policy.yaml
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+# 🚨 Log security-sensitive operations at RequestResponse level
+- level: RequestResponse
+  resources:
+  - group: ""
+    resources: ["secrets", "configmaps"]
+  - group: "rbac.authorization.k8s.io"
+    resources: ["*"]
+
+# 🔍 Log all authentication failures
+- level: Request
+  users: ["system:anonymous"]
+  
+# 📊 Log resource creation/deletion
+- level: Metadata
+  verbs: ["create", "delete", "patch"]
+  
+# 🔇 Don't log read-only operations on non-sensitive resources
+- level: None
+  verbs: ["get", "list", "watch"]
+  resources:
+  - group: ""
+    resources: ["pods", "services", "endpoints"]
+```
+
+#### 🔒 **Security Hardening Checklist**
+
+<table>
+<tr>
+<td width="50%">
+
+##### ✅ **Must-Have Configurations**
+- [ ] **Disable insecure port** (`--insecure-port=0`)
+- [ ] **Enable TLS 1.2+** minimum
+- [ ] **Strong cipher suites** only
+- [ ] **Client certificate authentication**
+- [ ] **RBAC authorization** enabled
+- [ ] **Comprehensive audit logging**
+- [ ] **Disable profiling** in production
+- [ ] **Resource quotas** configured
+
+</td>
+<td width="50%">
+
+##### 🚨 **Common Misconfigurations**
+- ❌ **Insecure port enabled** (8080)
+- ❌ **Anonymous authentication** allowed
+- ❌ **Weak TLS configuration**
+- ❌ **AlwaysAllow** authorization
+- ❌ **No audit logging**
+- ❌ **Profiling enabled** in production
+- ❌ **Missing admission controllers**
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🧠 Controller Manager Security
+
+> **🎯 Exam Focus:** Controller Manager manages cluster state - understand its security implications and service account token management!
+
+The **Controller Manager** runs core control loops that regulate the state of the cluster. It requires elevated privileges but should be properly secured.
 
 ### Security Considerations
 

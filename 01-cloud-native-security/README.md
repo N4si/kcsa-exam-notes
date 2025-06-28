@@ -1,320 +1,66 @@
-# 🌐 Cloud Native Security Overview - 14%
+# Overview of Cloud Native Security - 14%
 
-<div align="center">
+Cloud Native Security is the practice of securing cloud native applications and infrastructure. It involves securing the entire cloud native stack, from the code running in your containers to the infrastructure running your cluster. Cloud Native Security is a shared responsibility between the cloud provider and the customer, and it requires a combination of security controls, best practices, and tools to ensure that your cloud native environment is secure.
 
-![Cloud Native Security](https://img.shields.io/badge/Domain%201-Cloud%20Native%20Security-blue?style=for-the-badge)
-![Weight](https://img.shields.io/badge/Exam%20Weight-14%25-green?style=for-the-badge)
-![Questions](https://img.shields.io/badge/~11%20Questions-Multiple%20Choice-orange?style=for-the-badge)
+## The 4Cs of Cloud Native Security
 
-**🎯 Foundation Domain - Start Your KCSA Journey Here!**
+The 4Cs of Cloud Native Security are:
 
-</div>
+1. **Code**
+2. **Container**
+3. **Cluster**
+4. **Cloud**
 
----
+Each C represents a different layer of the cloud native stack and has its own set of security challenges and best practices. Each layer builds on the previous one, so it's important to have a good understanding of all four layers to ensure a secure cloud native environment. The Code layer is the innermost layer and the Cloud layer is the outermost layer. Each layer greatly affects the layers within it and once cannot protect everything from the Code layer if there are vulnerabilities in the Cluster or Cloud layer.
 
-## 🎯 Domain Overview
+### Code (Innermost Layer)
+Security starts with secure code. This includes:
+- **Secure coding practices**
+- **Dependency management**
+- **Static code analysis**
+- **Secret management in code**
 
-> **Cloud Native Security** is the practice of securing cloud native applications and infrastructure throughout their **entire lifecycle** - from development to deployment to runtime.
-
-### 🔍 What You'll Master
-
-This foundational domain covers the **security principles** that underpin all cloud native technologies. Think of it as building your security mindset before diving into specific Kubernetes implementations.
-
-<table>
-<tr>
-<td width="50%">
-
-#### 🎓 **Learning Objectives**
-- Understand the 4Cs security model
-- Master shared responsibility concepts
-- Learn compliance frameworks
-- Implement isolation techniques
-- Secure container images and registries
-- Apply workload security best practices
-
-</td>
-<td width="50%">
-
-#### 🎯 **Exam Focus Areas**
-- Security layering principles (4Cs)
-- Cloud provider security models
-- Compliance requirements (PCI, HIPAA, SOC2)
-- Container image security
-- Isolation and segmentation
-- Security frameworks and tools
-
-</td>
-</tr>
-</table>
-
-### 📊 Domain Breakdown
-
-```mermaid
-pie title Cloud Native Security Topics
-    "4Cs Security Model" : 25
-    "Cloud Provider Security" : 20
-    "Compliance Frameworks" : 20
-    "Isolation Techniques" : 15
-    "Image Security" : 15
-    "Workload Security" : 5
-```
-
----
-
-## 🏗️ The 4Cs of Cloud Native Security
-
-> **🎯 Exam Focus:** This is the foundational model for all cloud native security. Expect 2-3 questions directly on this topic!
-
-The **4Cs model** represents a **layered defense strategy** where each layer builds upon and depends on the security of the layers beneath it. Think of it like an onion - multiple layers of protection!
-
-<div align="center">
-
-```
-┌─────────────────────────────────────────┐
-│                 ☁️ CLOUD                │  ← Outermost Layer
-│  ┌─────────────────────────────────────┐ │
-│  │            🏗️ CLUSTER              │ │
-│  │  ┌─────────────────────────────────┐ │ │
-│  │  │         📦 CONTAINER           │ │ │
-│  │  │  ┌─────────────────────────────┐ │ │ │
-│  │  │  │        💻 CODE             │ │ │ │  ← Innermost Layer
-│  │  │  └─────────────────────────────┘ │ │ │
-│  │  └─────────────────────────────────┘ │ │
-│  └─────────────────────────────────────┘ │
-└─────────────────────────────────────────┘
-```
-
-</div>
-
-### 💻 Layer 1: Code (Innermost Layer)
-
-> **🎯 Security starts with secure code!** This is where vulnerabilities are born.
-
-<table>
-<tr>
-<td width="50%">
-
-#### 🔒 **Security Practices**
-- **Secure coding standards** (OWASP guidelines)
-- **Dependency vulnerability scanning**
-- **Static Application Security Testing (SAST)**
-- **Secret management** (never hardcode!)
-- **Code signing and integrity**
-
-</td>
-<td width="50%">
-
-#### 🛠️ **Tools & Examples**
-```bash
-# Dependency scanning with npm audit
-npm audit --audit-level high
-
-# Secret scanning with git-secrets
-git secrets --scan
-
-# SAST with SonarQube
-sonar-scanner -Dsonar.projectKey=myapp
-```
-
-</td>
-</tr>
-</table>
-
-#### 📝 **Code Security Example**
-
+Example of secure secret management:
 ```python
-# ❌ BAD: Hardcoded secrets
+# Bad - hardcoded secrets
 DATABASE_URL = "postgresql://user:password123@db:5432/myapp"
 
-# ✅ GOOD: Environment variables
+# Good - environment variables
 import os
 DATABASE_URL = os.getenv('DATABASE_URL')
-
-# ✅ BETTER: Secret management service
-from kubernetes import client, config
-def get_secret(name, namespace='default'):
-    config.load_incluster_config()
-    v1 = client.CoreV1Api()
-    secret = v1.read_namespaced_secret(name, namespace)
-    return secret.data
 ```
 
-### 📦 Layer 2: Container
+### Container
+Container security focuses on:
+- **Image security and scanning**
+- **Runtime security**
+- **Container isolation**
+- **Minimal base images**
 
-> **🎯 Container security is about image integrity and runtime protection.**
-
-<table>
-<tr>
-<td width="50%">
-
-#### 🔒 **Security Practices**
-- **Minimal base images** (distroless, alpine)
-- **Image vulnerability scanning**
-- **Image signing and verification**
-- **Runtime security monitoring**
-- **Non-root user execution**
-
-</td>
-<td width="50%">
-
-#### 🛠️ **Tools & Examples**
-```bash
-# Scan with Trivy
-trivy image nginx:latest
-
-# Sign with Cosign
-cosign sign --key cosign.key myimage:v1.0
-
-# Verify signature
-cosign verify --key cosign.pub myimage:v1.0
-```
-
-</td>
-</tr>
-</table>
-
-#### 📝 **Secure Dockerfile Example**
-
+Example secure Dockerfile:
 ```dockerfile
-# ✅ SECURE Dockerfile
-FROM gcr.io/distroless/java:11  # Minimal base image
-
-# Create non-root user
+FROM gcr.io/distroless/java:11
 USER 1000:1000
-
-# Copy application (no shell access in distroless)
 COPY app.jar /app.jar
-
-# Expose port (non-privileged)
 EXPOSE 8080
-
-# Run as non-root
 ENTRYPOINT ["java", "-jar", "/app.jar"]
-
-# ❌ AVOID these patterns:
-# FROM ubuntu:latest          # Too many packages
-# USER root                   # Privileged user
-# RUN chmod 777 /app          # Overly permissive
-# COPY . /                    # Copying everything
 ```
 
-### 🏗️ Layer 3: Cluster
-
-> **🎯 This is where Kubernetes-specific security controls live.**
-
-<table>
-<tr>
-<td width="50%">
-
-#### 🔒 **Security Practices**
+### Cluster
+Kubernetes-specific security controls:
 - **RBAC (Role-Based Access Control)**
-- **Pod Security Standards**
-- **Network Policies**
-- **Admission Controllers**
-- **Audit logging**
-- **Secrets management**
+- **Pod security standards**
+- **Network policies**
+- **Admission controllers**
 
-</td>
-<td width="50%">
-
-#### 🛠️ **Tools & Examples**
-```bash
-# Check RBAC permissions
-kubectl auth can-i create pods
-
-# Apply network policy
-kubectl apply -f network-policy.yaml
-
-# View audit logs
-kubectl logs -n kube-system kube-apiserver-*
-```
-
-</td>
-</tr>
-</table>
-
-#### 📝 **Cluster Security Example**
-
-```yaml
-# ✅ Secure Pod Security Standard
-apiVersion: v1
-kind: Pod
-metadata:
-  name: secure-app
-spec:
-  securityContext:
-    runAsNonRoot: true      # Don't run as root
-    runAsUser: 1000         # Specific user ID
-    fsGroup: 2000           # File system group
-  containers:
-  - name: app
-    image: myapp:v1.0
-    securityContext:
-      allowPrivilegeEscalation: false  # Prevent privilege escalation
-      readOnlyRootFilesystem: true     # Read-only filesystem
-      capabilities:
-        drop:
-        - ALL                          # Drop all capabilities
-        add:
-        - NET_BIND_SERVICE            # Only add what's needed
-    resources:
-      limits:
-        memory: "512Mi"               # Resource limits
-        cpu: "500m"
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
-```
-
-### ☁️ Layer 4: Cloud (Outermost Layer)
-
-> **🎯 Infrastructure and platform security - the foundation everything else builds on.**
-
-<table>
-<tr>
-<td width="50%">
-
-#### 🔒 **Security Practices**
-- **Infrastructure as Code (IaC)**
-- **Network segmentation (VPCs)**
-- **Identity and Access Management**
-- **Encryption at rest and in transit**
+### Cloud (Outermost Layer)
+Infrastructure and platform security:
+- **Infrastructure security**
+- **Network security**
+- **Identity and access management**
 - **Compliance and governance**
-- **Monitoring and logging**
 
-</td>
-<td width="50%">
-
-#### 🛠️ **Tools & Examples**
-```bash
-# AWS security groups
-aws ec2 describe-security-groups
-
-# GCP IAM policies
-gcloud iam policies list
-
-# Azure network security
-az network nsg list
-```
-
-</td>
-</tr>
-</table>
-
-### 🚨 Critical Security Principle
-
-<div align="center">
-
-> **⚠️ EXAM KEY POINT:** *Security vulnerabilities at any outer layer can compromise ALL inner layers!*
-
-**Example:** If your cloud infrastructure is compromised, it doesn't matter how secure your code is.
-
-</div>
-
-#### 📚 **Official Documentation**
-- 📖 [Kubernetes Security Concepts](https://kubernetes.io/docs/concepts/security/)
-- 📖 [4Cs of Cloud Native Security](https://kubernetes.io/docs/concepts/security/overview/)
-- 📖 [CNCF Security Whitepaper](https://github.com/cncf/tag-security/blob/main/security-whitepaper/cloud-native-security-whitepaper.md)
+**Key Principle:** Security vulnerabilities at any outer layer can compromise all inner layers. You cannot fully protect the Code layer if there are vulnerabilities in the Cluster or Cloud layers.
 
 ---
 
@@ -903,6 +649,7 @@ image: nginx@sha256:abc123...
 - [OWASP Kubernetes Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Kubernetes_Security_Cheat_Sheet.html)
 - [Cloud Native Security Whitepaper](https://github.com/cncf/tag-security/blob/main/security-whitepaper/cloud-native-security-whitepaper.md)
 
----
+## Navigation
 
-**Next Section:** [Kubernetes Cluster Component Security →](../02-cluster-component-security/README.md)
+- **Previous:** [← Main README](../README.md)
+- **Next:** [Kubernetes Cluster Component Security →](../02-cluster-component-security/README.md)
