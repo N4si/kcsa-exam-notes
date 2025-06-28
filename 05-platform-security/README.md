@@ -648,6 +648,7 @@ spec:
 - [cert-manager](https://cert-manager.io/) - Certificate management
 - [Harbor](https://goharbor.io/) - Container registry
 
----
+## Navigation
 
-**Next Section:** [Compliance and Security Frameworks →](../06-compliance-frameworks/README.md)
+- **Previous:** [← Kubernetes Threat Model](../04-threat-model/README.md)
+- **Next:** [Compliance and Security Frameworks →](../06-compliance-frameworks/README.md)

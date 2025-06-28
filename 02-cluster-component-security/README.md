@@ -1,113 +1,13 @@
-# 🔧 Kubernetes Cluster Component Security - 22%
-
-<div align="center">
-
-![Cluster Security](https://img.shields.io/badge/Domain%202-Cluster%20Component%20Security-red?style=for-the-badge)
-![Weight](https://img.shields.io/badge/Exam%20Weight-22%25-green?style=for-the-badge)
-![Questions](https://img.shields.io/badge/~18%20Questions-Highest%20Weight-orange?style=for-the-badge)
-
-**🎯 Most Critical Domain - Master These Components!**
-
-</div>
-
----
-
-## 🎯 Domain Overview
-
-> **This is the HIGHEST weighted domain** - understanding Kubernetes component security is absolutely crucial for KCSA success!
-
-### 🔍 What You'll Master
+# Kubernetes Cluster Component Security - 22%
 
 Understanding the security of individual Kubernetes components is crucial for maintaining a secure cluster. Each component has specific security considerations, attack vectors, and hardening requirements. This section covers the security aspects of all major Kubernetes components.
 
-<table>
-<tr>
-<td width="50%">
+This is the highest weighted domain in the KCSA exam, so understanding these components thoroughly is essential for success.
 
-#### 🎓 **Learning Objectives**
-- Secure API server configurations
-- Harden etcd data store
-- Configure kubelet security
-- Implement container runtime security
-- Secure cluster networking
-- Protect storage and secrets
 
-</td>
-<td width="50%">
+## API Server Security
 
-#### 🎯 **Exam Focus Areas**
-- API server authentication/authorization
-- etcd encryption and access control
-- Kubelet configuration and security
-- Container runtime security features
-- Network security and CNI plugins
-- Storage encryption and access patterns
-
-</td>
-</tr>
-</table>
-
-### 📊 Component Security Priority
-
-```mermaid
-graph TD
-    A[🔐 API Server] --> B[🗄️ etcd]
-    A --> C[🤖 Kubelet]
-    A --> D[📦 Container Runtime]
-    C --> E[🌐 Network]
-    C --> F[💾 Storage]
-    
-    style A fill:#ff6b6b
-    style B fill:#ffa726
-    style C fill:#66bb6a
-    style D fill:#42a5f5
-    style E fill:#ab47bc
-    style F fill:#26c6da
-```
-
-### 🏗️ Kubernetes Architecture Security Overview
-
-<div align="center">
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    🏗️ CONTROL PLANE                        │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │ 🔐 API      │  │ 🧠 Controller│  │ 📅 Scheduler        │  │
-│  │   Server    │  │   Manager   │  │                     │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-│                           │                                 │
-│                    ┌─────────────┐                         │
-│                    │ 🗄️ etcd     │                         │
-│                    │   Database  │                         │
-│                    └─────────────┘                         │
-└─────────────────────────────────────────────────────────────┘
-                              │
-┌─────────────────────────────────────────────────────────────┐
-│                      🖥️ WORKER NODES                       │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │ 🤖 Kubelet  │  │ 🌐 Kube     │  │ 📦 Container        │  │
-│  │             │  │   Proxy     │  │   Runtime           │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────────┐ │
-│  │                    📦 PODS                             │ │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐ │ │
-│  │  │ Container 1 │  │ Container 2 │  │ Container 3     │ │ │
-│  │  └─────────────┘  └─────────────┘  └─────────────────┘ │ │
-│  └─────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────┘
-```
-
-</div>
-
----
-
-## 🔐 API Server Security
-
-> **🎯 Exam Focus:** The API server is the **gateway to your cluster** - expect 4-5 questions on API server security!
-
-The **API Server** is the central component of the Kubernetes control plane and the **primary attack target**. It exposes the Kubernetes API and serves as the gateway for all cluster operations.
+The API Server is the central component of the Kubernetes control plane and the primary attack target. It exposes the Kubernetes API and serves as the gateway for all cluster operations.
 
 ### 🏗️ API Server Security Architecture
 
@@ -755,6 +655,7 @@ spec:
 - [Falco](https://falco.org/) - Runtime security monitoring
 - [Polaris](https://polaris.docs.fairwinds.com/) - Configuration validation
 
----
+## Navigation
 
-**Next Section:** [Kubernetes Security Fundamentals →](../03-security-fundamentals/README.md)
+- **Previous:** [← Overview of Cloud Native Security](../01-cloud-native-security/README.md)
+- **Next:** [Kubernetes Security Fundamentals →](../03-security-fundamentals/README.md)

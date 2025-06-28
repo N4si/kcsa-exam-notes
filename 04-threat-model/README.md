@@ -1005,6 +1005,7 @@ metadata:
 - [kube-hunter](https://github.com/aquasecurity/kube-hunter) - Penetration testing
 - [Polaris](https://polaris.docs.fairwinds.com/) - Configuration validation
 
----
+## Navigation
 
-**Next Section:** [Platform Security →](../05-platform-security/README.md)
+- **Previous:** [← Kubernetes Security Fundamentals](../03-security-fundamentals/README.md)
+- **Next:** [Platform Security →](../05-platform-security/README.md)

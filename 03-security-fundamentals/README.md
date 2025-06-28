@@ -1107,6 +1107,7 @@ kubectl auth can-i delete nodes --as=system:serviceaccount:monitoring:monitoring
 - [Falco](https://falco.org/) - Runtime security monitoring
 - [OPA Gatekeeper](https://open-policy-agent.github.io/gatekeeper/) - Policy enforcement
 
----
+## Navigation
 
-**Next Section:** [Kubernetes Threat Model →](../04-threat-model/README.md)
+- **Previous:** [← Kubernetes Cluster Component Security](../02-cluster-component-security/README.md)
+- **Next:** [Kubernetes Threat Model →](../04-threat-model/README.md)
