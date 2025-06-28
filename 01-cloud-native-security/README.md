@@ -1,53 +1,30 @@
 # Overview of Cloud Native Security - 14%
 
-Cloud Native Security is the practice of securing cloud native applications and infrastructure. It involves securing the entire cloud native stack, from the code running in your containers to the infrastructure running your cluster. Cloud Native Security is a shared responsibility between the cloud provider and the customer, and it requires a combination of security controls, best practices, and tools to ensure that your cloud native environment is secure.
+Cloud native security involves securing the entire stack from code to cloud infrastructure. It's a shared responsibility model between cloud providers and customers.
 
 ## The 4Cs of Cloud Native Security
 
-The 4Cs of Cloud Native Security are:
+**Code → Container → Cluster → Cloud** (innermost to outermost layers)
 
-1. **Code**
-2. **Container**
-3. **Cluster**
-4. **Cloud**
-
-Each C represents a different layer of the cloud native stack and has its own set of security challenges and best practices. Each layer builds on the previous one, so it's important to have a good understanding of all four layers to ensure a secure cloud native environment. The Code layer is the innermost layer and the Cloud layer is the outermost layer. Each layer greatly affects the layers within it and once cannot protect everything from the Code layer if there are vulnerabilities in the Cluster or Cloud layer.
-
-### Code (Innermost Layer)
-Security starts with secure code. This includes:
-- **Secure coding practices**
-- **Dependency management**
-- **Static code analysis**
-- **Secret management in code**
-
-Example of secure secret management:
-```python
-# Bad - hardcoded secrets
-DATABASE_URL = "postgresql://user:password123@db:5432/myapp"
-
-# Good - environment variables
-import os
-DATABASE_URL = os.getenv('DATABASE_URL')
-```
+### Code
+- Secure coding practices
+- Dependency management  
+- Static code analysis
+- No hardcoded secrets
 
 ### Container
-Container security focuses on:
-- **Image security and scanning**
-- **Runtime security**
-- **Container isolation**
-- **Minimal base images**
-
-Example secure Dockerfile:
-```dockerfile
-FROM gcr.io/distroless/java:11
-USER 1000:1000
-COPY app.jar /app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app.jar"]
-```
+- Image scanning for vulnerabilities
+- Minimal base images (distroless)
+- Run as non-root user
+- Runtime security monitoring
 
 ### Cluster
-Kubernetes-specific security controls:
+- RBAC and authentication
+- Network policies
+- Pod security standards
+- Secrets management
+
+### Cloud
 - **RBAC (Role-Based Access Control)**
 - **Pod security standards**
 - **Network policies**
@@ -651,5 +628,9 @@ image: nginx@sha256:abc123...
 
 ## Navigation
 
+- **Previous:** [← Main README](../README.md)
+---
+
+**Navigation:**
 - **Previous:** [← Main README](../README.md)
 - **Next:** [Kubernetes Cluster Component Security →](../02-cluster-component-security/README.md)

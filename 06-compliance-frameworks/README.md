@@ -1,53 +1,35 @@
 # Compliance and Security Frameworks - 10%
 
-This section covers the various compliance frameworks, threat modeling approaches, supply chain compliance requirements, and automation tools that are essential for maintaining security and regulatory compliance in Kubernetes environments.
+Compliance frameworks and automation tools for regulatory compliance in Kubernetes.
 
 ## Compliance Frameworks
 
-Understanding and implementing compliance frameworks is crucial for organizations operating in regulated industries or handling sensitive data.
+### PCI DSS (Payment Card Industry)
+- **Network segmentation** for cardholder data
+- **Access controls** and authentication
+- **Encryption** at rest and in transit
+- **Regular security testing**
+- **Audit logging** and monitoring
 
-### PCI DSS (Payment Card Industry Data Security Standard)
+### HIPAA (Healthcare)
+- **Data encryption** requirements
+- **Access controls** and audit trails
+- **Risk assessments**
+- **Business associate agreements**
 
-PCI DSS applies to organizations that handle credit card data and requires specific security controls.
+### NIST Cybersecurity Framework
+- **Identify** - Asset management, risk assessment
+- **Protect** - Access control, data security
+- **Detect** - Security monitoring
+- **Respond** - Incident response
+- **Recover** - Recovery planning
 
-#### Key Requirements for Kubernetes
-
-##### Network Segmentation
-```yaml
-# PCI DSS compliant network policy
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: pci-cardholder-isolation
-  namespace: payment-processing
-spec:
-  podSelector:
-    matchLabels:
-      pci-scope: cardholder-data
-  policyTypes:
-  - Ingress
-  - Egress
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          pci-scope: authorized-access
-    ports:
-    - protocol: TCP
-      port: 443
-  egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          pci-scope: secure-database
-    ports:
-    - protocol: TCP
-      port: 5432
-```
-
-##### Access Controls
-```yaml
-# PCI DSS RBAC configuration
+### SOC 2 (Service Organizations)
+- **Security** controls
+- **Availability** controls
+- **Processing integrity**
+- **Confidentiality**
+- **Privacy** controls
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -822,3 +804,9 @@ This section covered the essential compliance and security frameworks needed for
 - **Automation and Tooling**: Security scanning, policy enforcement, and monitoring
 
 Understanding these frameworks and their implementation in Kubernetes environments is crucial for maintaining security and regulatory compliance in production systems.
+
+---
+
+**Navigation:**
+- **Previous:** [← Platform Security](../05-platform-security/README.md)
+- **Next:** [Main README →](../README.md)

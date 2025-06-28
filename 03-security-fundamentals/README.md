@@ -1,53 +1,184 @@
 # Kubernetes Security Fundamentals - 22%
 
-This section covers the core security mechanisms and practices that form the foundation of Kubernetes security. These fundamentals are essential for implementing a secure Kubernetes environment and are heavily tested in the KCSA exam.
+Core security mechanisms heavily tested in KCSA exam. Equal weight to cluster components (22%).
 
 ## Pod Security Standards
 
-Pod Security Standards define three levels of security policies that can be applied to pods, replacing the deprecated PodSecurityPolicy.
+Three security policy levels replacing deprecated PodSecurityPolicy:
 
-### Security Levels
+### Privileged
+- No restrictions
+- System workloads only
+- Allows privilege escalation
+- High risk
 
-#### Privileged
-The most permissive policy level with no restrictions:
-- **Use Cases**: System workloads, infrastructure components, CNI plugins
-- **Allowed**: All privilege escalations, host access, privileged containers
-- **Risk**: High - suitable only for trusted workloads
+### Baseline  
+- Prevents known privilege escalations
+- General applications
+- No privileged containers
+- Medium risk
 
+### Restricted
+- Most restrictive
+- Security-critical workloads
+- Pod hardening best practices
+- Low risk
+
+## Pod Security Admission
+
+Built-in admission controller enforcing Pod Security Standards.
+
+### Enforcement Modes
+- **enforce** - Reject non-compliant pods
+- **audit** - Log violations
+- **warn** - Show warnings
+
+### Namespace Labels
 ```yaml
-# Example privileged pod
-apiVersion: v1
-kind: Pod
-metadata:
-  name: privileged-pod
-spec:
-  containers:
-  - name: app
-    image: nginx
-    securityContext:
-      privileged: true
-      allowPrivilegeEscalation: true
+pod-security.kubernetes.io/enforce: restricted
+pod-security.kubernetes.io/audit: restricted  
+pod-security.kubernetes.io/warn: restricted
 ```
 
-#### Baseline
-Minimally restrictive policy preventing known privilege escalations:
-- **Use Cases**: General applications, non-critical workloads
-- **Restrictions**: 
-  - No privileged containers
-  - No host network/PID/IPC access
-  - Limited volume types
-  - No privilege escalation
-- **Risk**: Medium - good balance for most workloads
+## Authentication
 
+Verifying identity of users and services.
+
+### Authentication Methods
+- **X.509 Client Certificates**
+- **Static Token Files**
+- **Bootstrap Tokens**
+- **Service Account Tokens**
+- **OpenID Connect (OIDC)**
+- **Webhook Token Authentication**
+
+### Service Accounts
+- Default service account per namespace
+- Automatic token mounting
+- RBAC permissions
+- Token rotation
+
+## Authorization
+
+Determining what authenticated users can do.
+
+### RBAC (Role-Based Access Control)
+Primary authorization method.
+
+#### Core Components
+- **Role** - Namespace-scoped permissions
+- **ClusterRole** - Cluster-wide permissions  
+- **RoleBinding** - Bind Role to subjects
+- **ClusterRoleBinding** - Bind ClusterRole to subjects
+
+#### Subjects
+- **User** - Human users
+- **Group** - User groups
+- **ServiceAccount** - Pod identities
+
+### Authorization Modes
+- **RBAC** (recommended)
+- **ABAC** (Attribute-Based)
+- **Node** (kubelet authorization)
+- **Webhook** (external authorization)
+
+## Secrets
+
+Storing sensitive data (passwords, tokens, keys).
+
+### Secret Types
+- **Opaque** - Arbitrary data
+- **kubernetes.io/service-account-token**
+- **kubernetes.io/dockercfg** - Docker registry
+- **kubernetes.io/tls** - TLS certificates
+
+### Security Considerations
+- Base64 encoded (not encrypted)
+- Encryption at rest required
+- External secret management preferred
+- Least privilege access
+- Regular rotation
+
+### Best Practices
+- Use external secret stores (Vault, AWS Secrets Manager)
+- Enable encryption at rest
+- Limit secret access with RBAC
+- Avoid mounting unnecessary secrets
+
+## Isolation and Segmentation
+
+### Namespaces
+- Soft isolation boundaries
+- Resource quotas
+- RBAC scoping
+- Network policy targeting
+
+### Network Policies
+Control pod-to-pod communication.
+
+#### Policy Types
+- **Ingress** - Incoming traffic
+- **Egress** - Outgoing traffic
+
+#### Selectors
+- **podSelector** - Target pods
+- **namespaceSelector** - Target namespaces
+
+### Process Namespace Sharing
+- shareProcessNamespace: true
+- Security risk - container escape
+- Avoid unless necessary
+
+## Audit Logging
+
+Recording API server requests for security monitoring.
+
+### Audit Levels
+- **None** - No logging
+- **Metadata** - Request metadata only
+- **Request** - Metadata + request body
+- **RequestResponse** - Metadata + request/response
+
+### Audit Policy
+Define what to log:
+- Resources to audit
+- Verbs to capture
+- Users/groups to monitor
+- Namespaces to include/exclude
+
+### Configuration
 ```yaml
-# Example baseline-compliant pod
-apiVersion: v1
-kind: Pod
-metadata:
-  name: baseline-pod
-spec:
-  securityContext:
-    runAsNonRoot: true
+--audit-log-path=/var/log/audit.log
+--audit-policy-file=/etc/kubernetes/audit-policy.yaml
+--audit-log-maxage=30
+--audit-log-maxbackup=10
+```
+
+## Network Policy
+
+Controlling network traffic between pods.
+
+### Default Behavior
+- All pods can communicate (no restrictions)
+- Network policies are additive
+- Default deny recommended
+
+### Policy Components
+- **podSelector** - Target pods
+- **policyTypes** - Ingress/Egress
+- **ingress** - Allowed incoming traffic
+- **egress** - Allowed outgoing traffic
+
+### Selectors
+- **podSelector** - Select by labels
+- **namespaceSelector** - Select by namespace
+- **ipBlock** - Select by IP range
+
+### Best Practices
+- Start with default deny
+- Allow only necessary traffic
+- Use namespace isolation
+- Monitor network flows
   containers:
   - name: app
     image: nginx
@@ -1109,5 +1240,8 @@ kubectl auth can-i delete nodes --as=system:serviceaccount:monitoring:monitoring
 
 ## Navigation
 
+---
+
+**Navigation:**
 - **Previous:** [← Kubernetes Cluster Component Security](../02-cluster-component-security/README.md)
 - **Next:** [Kubernetes Threat Model →](../04-threat-model/README.md)

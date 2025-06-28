@@ -1,53 +1,172 @@
 # Kubernetes Cluster Component Security - 22%
 
-Understanding the security of individual Kubernetes components is crucial for maintaining a secure cluster. Each component has specific security considerations, attack vectors, and hardening requirements. This section covers the security aspects of all major Kubernetes components.
-
-This is the highest weighted domain in the KCSA exam, so understanding these components thoroughly is essential for success.
-
+Highest weighted domain (22%). Focus on securing individual Kubernetes components and their attack vectors.
 
 ## API Server Security
 
-The API Server is the central component of the Kubernetes control plane and the primary attack target. It exposes the Kubernetes API and serves as the gateway for all cluster operations.
+Central control plane component - primary attack target. Gateway for all cluster operations.
 
-### 🏗️ API Server Security Architecture
+### Authentication Methods
+- **X.509 Client Certificates** (recommended)
+- **Service Account Tokens**
+- **OpenID Connect (OIDC)**
+- **Webhook Token Authentication**
+- **Static Token Files** (not recommended)
 
-<div align="center">
+### Authorization Modes
+- **RBAC** (recommended)
+- **ABAC**
+- **Node Authorization**
+- **Webhook Authorization**
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    🔐 API SERVER                            │
-│                                                             │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │ 🔑 Authn    │→ │ 🛡️ Authz    │→ │ ✅ Admission        │  │
-│  │ (Who?)      │  │ (Can they?) │  │   Controllers       │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-│                                                             │
-│                           ↓                                 │
-│                    ┌─────────────┐                         │
-│                    │ 🗄️ etcd     │                         │
-│                    │   Storage   │                         │
-│                    └─────────────┘                         │
-└─────────────────────────────────────────────────────────────┘
-```
+### Security Hardening
+- Disable insecure port (--insecure-port=0)
+- Enable TLS 1.2+ minimum
+- Strong cipher suites only
+- Comprehensive audit logging
+- Disable profiling in production
 
-</div>
+## Controller Manager Security
 
-### 🔒 Security Features
+Runs control loops managing cluster state. Requires elevated privileges.
 
-<table>
-<tr>
-<td width="50%">
+### Security Configuration
+- Secure communication with API server
+- Service account token management
+- Certificate rotation
+- Resource quota enforcement
 
-#### 🔑 **Authentication Methods**
-- ✅ **X.509 Client Certificates** (Recommended)
-- 🎫 **Service Account Tokens**
-- 🔐 **OpenID Connect (OIDC)**
-- 🌐 **Webhook Token Authentication**
-- ⚠️ **Static Token Files** (Not recommended)
-- 🚀 **Bootstrap Tokens** (For cluster setup)
+## Scheduler Security
 
-</td>
-<td width="50%">
+Assigns pods to nodes based on constraints and resource requirements.
+
+### Security Considerations
+- Secure API server communication
+- Node affinity/anti-affinity rules
+- Resource constraints
+- Security context enforcement
+
+## Kubelet Security
+
+Node agent managing pods and containers. Critical security component.
+
+### Key Security Settings
+- Disable anonymous authentication (--anonymous-auth=false)
+- Use Webhook authorization mode
+- Enable certificate rotation
+- Secure communication with API server
+- Read-only port disabled
+
+### Common Vulnerabilities
+- Anonymous access enabled
+- Insecure permissions
+- Unencrypted communication
+- Missing authorization
+
+## Container Runtime Security
+
+Software running containers (Docker, containerd, CRI-O).
+
+### Security Features
+- **Namespace isolation**
+- **Cgroups resource limits**
+- **Seccomp profiles**
+- **AppArmor/SELinux**
+- **User namespaces**
+
+### Runtime Classes
+- Different security profiles
+- gVisor (runsc) for additional isolation
+- Kata Containers for VM-level isolation
+
+## KubeProxy Security
+
+Network proxy running on each node. Implements Service abstraction.
+
+### Security Considerations
+- iptables rules management
+- Network traffic routing
+- Service discovery security
+- Load balancing security
+
+## Pod Security
+
+Smallest deployable units. Multiple security contexts available.
+
+### Security Context
+- **runAsUser/runAsGroup** - User/group IDs
+- **runAsNonRoot** - Prevent root execution
+- **readOnlyRootFilesystem** - Immutable filesystem
+- **allowPrivilegeEscalation** - Prevent privilege escalation
+- **capabilities** - Linux capabilities management
+
+### Pod Security Standards
+- **Privileged** - No restrictions
+- **Baseline** - Basic security
+- **Restricted** - Hardened security
+
+## Etcd Security
+
+Distributed key-value store. Contains all cluster data.
+
+### Critical Security Measures
+- **Encryption at rest** (--encryption-provider-config)
+- **TLS communication** between etcd members
+- **Client certificate authentication**
+- **Network isolation** (firewall rules)
+- **Regular backups** with encryption
+- **Access control** (minimal permissions)
+
+### Common Misconfigurations
+- Unencrypted data at rest
+- Weak TLS configuration
+- Exposed etcd ports
+- Missing access controls
+
+## Container Networking
+
+CNI plugins provide pod networking. Security depends on implementation.
+
+### Network Security
+- **Network Policies** for traffic control
+- **CNI plugin security** features
+- **Service mesh** integration
+- **Encryption in transit**
+
+### Common CNI Plugins
+- **Calico** - Network policies, security rules
+- **Cilium** - eBPF-based security
+- **Weave** - Encryption support
+- **Flannel** - Basic networking
+
+## Client Security
+
+Securing kubectl and other API clients.
+
+### Best Practices
+- **kubeconfig security** (file permissions)
+- **RBAC** for user permissions
+- **Certificate-based authentication**
+- **Context isolation**
+- **Audit logging** of client actions
+
+## Storage Security
+
+Securing persistent volumes and data.
+
+### Security Considerations
+- **Encryption at rest** for PVs
+- **Access modes** (ReadWriteOnce, ReadOnlyMany)
+- **Storage classes** with security policies
+- **Volume permissions** and ownership
+- **Secrets vs ConfigMaps** usage
+
+### Secrets Management
+- **Base64 encoding** (not encryption)
+- **Encryption at rest** configuration
+- **External secret management** (Vault, etc.)
+- **Secret rotation** policies
+- **Least privilege** access
 
 #### 🛡️ **Authorization Modes**
 - ✅ **RBAC** (Role-Based Access Control) - **Recommended**
@@ -657,5 +776,8 @@ spec:
 
 ## Navigation
 
+---
+
+**Navigation:**
 - **Previous:** [← Overview of Cloud Native Security](../01-cloud-native-security/README.md)
 - **Next:** [Kubernetes Security Fundamentals →](../03-security-fundamentals/README.md)

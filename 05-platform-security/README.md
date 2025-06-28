@@ -1,53 +1,25 @@
 # Platform Security - 16%
 
-Platform security encompasses the broader infrastructure and tooling that supports Kubernetes clusters, including supply chain security, observability, service mesh, PKI, connectivity, and admission control mechanisms.
+Securing infrastructure and tooling supporting Kubernetes clusters.
 
 ## Supply Chain Security
 
-Supply chain security focuses on securing the entire software development and deployment pipeline, from source code to running containers.
+Securing software development and deployment pipeline.
 
-### Container Image Supply Chain
+### Container Image Security
+- **Minimal base images** (distroless, Alpine)
+- **Multi-stage builds** to reduce attack surface
+- **Vulnerability scanning** in CI/CD
+- **Image signing** with Cosign/Sigstore
+- **SBOM generation** for transparency
+- **Private registries** for sensitive images
 
-#### Image Build Security
-```dockerfile
-# Secure Dockerfile practices
-FROM gcr.io/distroless/java:11  # Use minimal base images
-
-# Create non-root user
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser
-
-# Copy application files
-COPY --chown=appuser:appgroup app.jar /app/
-
-# Switch to non-root user
-USER appuser
-
-# Set secure defaults
-WORKDIR /app
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-
-#### Multi-stage Builds
-```dockerfile
-# Multi-stage build for security
-FROM maven:3.8-openjdk-11 AS builder
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-FROM gcr.io/distroless/java:11
-COPY --from=builder /app/target/app.jar /app.jar
-USER 1000
-ENTRYPOINT ["java", "-jar", "/app.jar"]
-```
-
-#### Image Scanning Integration
-```yaml
-# GitHub Actions workflow with image scanning
-name: Build and Scan
-on: [push]
+### Build Security
+- **Secure Dockerfile** practices
+- **Non-root users** in containers
+- **Read-only filesystems**
+- **Dependency scanning**
+- **Static code analysis**
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
@@ -650,5 +622,8 @@ spec:
 
 ## Navigation
 
+---
+
+**Navigation:**
 - **Previous:** [← Kubernetes Threat Model](../04-threat-model/README.md)
 - **Next:** [Compliance and Security Frameworks →](../06-compliance-frameworks/README.md)

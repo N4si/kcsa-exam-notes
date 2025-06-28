@@ -1,53 +1,22 @@
 # Kubernetes Threat Model - 16%
 
-Understanding the Kubernetes threat landscape is crucial for implementing effective security controls. This section covers the various attack vectors, threat actors, and security risks specific to Kubernetes environments, along with mitigation strategies.
+Understanding attack vectors and security risks in Kubernetes environments. Focus on threat actors and mitigation strategies.
 
 ## Kubernetes Trust Boundaries and Data Flow
 
-Trust boundaries define the security perimeters within a Kubernetes cluster, while data flow analysis helps identify potential attack paths and security vulnerabilities.
-
 ### Trust Boundaries
+- **Control Plane vs Worker Nodes** - Elevated privileges separation
+- **Cluster vs External Networks** - Network perimeter security  
+- **Privileged vs Unprivileged Workloads** - Security context differences
+- **Host vs Container** - Runtime isolation
+- **Pod-to-Pod Communication** - East-west traffic
+- **Ingress/Egress Traffic** - North-south traffic
 
-#### Cluster-Level Boundaries
-- **Control Plane vs. Worker Nodes**: Control plane components have elevated privileges
-- **Cluster vs. External Networks**: Network perimeter security
-- **Privileged vs. Unprivileged Workloads**: Different security contexts
-- **System vs. User Namespaces**: Built-in vs. custom workloads
-
-#### Node-Level Boundaries
-- **Host vs. Container**: Container runtime isolation
-- **Privileged vs. Unprivileged Containers**: Security context differences
-- **Container vs. Container**: Process and network isolation
-- **Kubelet vs. Container Runtime**: Component privilege separation
-
-#### Network Boundaries
-- **Pod-to-Pod Communication**: East-west traffic
-- **Ingress Traffic**: North-south inbound traffic
-- **Egress Traffic**: North-south outbound traffic
-- **Service Mesh**: Encrypted service communication
-
-### Data Flow Analysis
-
-#### API Server Communication
-```mermaid
-graph TD
-    A[kubectl/Client] -->|HTTPS/TLS| B[API Server]
-    B -->|etcd API| C[etcd]
-    B -->|HTTPS| D[Kubelet]
-    B -->|HTTPS| E[Controller Manager]
-    B -->|HTTPS| F[Scheduler]
-```
-
-#### Pod Communication Flow
-```mermaid
-graph TD
-    A[Pod A] -->|CNI Network| B[Pod B]
-    A -->|Service| C[Service]
-    C -->|kube-proxy| D[Pod C]
-    A -->|Ingress| E[External Client]
-```
-
-#### Critical Data Flows to Secure
+### Critical Data Flows
+- API Server ↔ etcd (cluster state)
+- API Server ↔ Kubelet (pod management)
+- Pod ↔ Pod (application traffic)
+- External ↔ Ingress (user traffic)
 1. **Client to API Server**: Authentication and authorization
 2. **API Server to etcd**: Encryption at rest and in transit
 3. **Kubelet to Container Runtime**: Secure container execution
@@ -1007,5 +976,8 @@ metadata:
 
 ## Navigation
 
+---
+
+**Navigation:**
 - **Previous:** [← Kubernetes Security Fundamentals](../03-security-fundamentals/README.md)
 - **Next:** [Platform Security →](../05-platform-security/README.md)
